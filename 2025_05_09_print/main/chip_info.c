@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "chip_info.h"
 
-char* get_chip_name(const esp_chip_info_t* chip_info)
+char* get_chip_name(const esp_chip_model_t model)
 {
-    switch (chip_info->model)
+    switch (model)
     {
     case CHIP_ESP32: return "ESP32";
     case CHIP_ESP32S2: return "ESP32-S2";
@@ -20,15 +20,22 @@ char* get_chip_name(const esp_chip_info_t* chip_info)
     }
 }
 
-void print_chip_info(void)
+void print_chip_info(const esp_chip_info_t* chip_info)
 {
-    esp_chip_info_t chip_info;
-    esp_chip_info(&chip_info);
-    printf("This is %s chip with %d CPU core(s)\n", get_chip_name(&chip_info), chip_info.cores);
-    printf("Chip has embedded flash memory: %s\n",  (chip_info.features & CHIP_FEATURE_EMB_FLASH)  ? "yes" : "no");
-    printf("Chip has 2.4GHz WiFi: %s\n",            (chip_info.features & CHIP_FEATURE_WIFI_BGN)   ? "yes" : "no");
-    printf("Chip has Bluetooth LE: %s\n",           (chip_info.features & CHIP_FEATURE_BLE)        ? "yes" : "no");
-    printf("Chip has Bluetooth Classic: %s\n",      (chip_info.features & CHIP_FEATURE_BT)         ? "yes" : "no");
-    printf("Chip has IEEE 802.15.4: %s\n",          (chip_info.features & CHIP_FEATURE_IEEE802154) ? "yes" : "no");
-    printf("Chip has embedded psram: %s\n",         (chip_info.features & CHIP_FEATURE_EMB_PSRAM)  ? "yes" : "no");
+    printf(
+        "This is %s chip with %d CPU core(s)\n"
+        "Chip has embedded flash memory: %s\n"
+        "Chip has 2.4GHz WiFi: %s\n"
+        "Chip has Bluetooth LE: %s\n"
+        "Chip has Bluetooth Classic: %s\n"
+        "Chip has IEEE 802.15.4: %s\n"
+        "Chip has embedded psram: %s\n",
+        get_chip_name(chip_info->model), chip_info->cores,
+        chip_info->features & CHIP_FEATURE_EMB_FLASH ? "yes" : "no",
+        chip_info->features & CHIP_FEATURE_WIFI_BGN ? "yes" : "no",
+        chip_info->features & CHIP_FEATURE_BLE ? "yes" : "no",
+        chip_info->features & CHIP_FEATURE_BT ? "yes" : "no",
+        chip_info->features & CHIP_FEATURE_IEEE802154 ? "yes" : "no",
+        chip_info->features & CHIP_FEATURE_EMB_PSRAM ? "yes" : "no"
+    );
 }
