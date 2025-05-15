@@ -29,11 +29,6 @@ i2c_master_bus_handle_t i2c_bus = NULL;
 esp_lcd_panel_io_handle_t io_handle = NULL;
 esp_lcd_panel_handle_t panel = NULL;
 
-typedef struct
-{
-    uint8_t x, y;
-} point;
-
 void init_ic2()
 {
     ESP_LOGI(TAG, "Initialize I2C bus");
@@ -113,20 +108,43 @@ void draw_sierpinski(uint16_t iterations)
 {
     ESP_LOGI(TAG, "Start drawing Sierpinski triangle...");
 
-    const point vertices[] = {
+    point vertices[] = {
         {LCD_H_RES / 2, 0},
         {LCD_H_RES / 2 - 37, LCD_V_RES - 1},
         {LCD_H_RES / 2 + 37, LCD_V_RES - 1},
     };
+
+    chaos_game(vertices, 3, 0.5F, iterations);
+    ESP_LOGI(TAG, "Finished drawing Sierpinski triangle.");
+}
+
+void draw_square_fractal(uint16_t iterations)
+{
+    ESP_LOGI(TAG, "Start drawing square fractal...");
+
+    point vertices[] = {
+        {31, 0},
+        {95, 0},
+        {95, LCD_V_RES - 1},
+        {31, LCD_V_RES - 1},
+    };
+
+    chaos_game(vertices, 4, 0.33F, iterations);
+    ESP_LOGI(TAG, "Finished drawing square fractal.");
+}
+
+void chaos_game(point vertices[], uint8_t vertex_count, float multiplier, uint16_t iterations)
+{
+    ESP_LOGI(TAG, "Start chaos game...");
 
     point p = vertices[0];
     point v = {};
 
     for (uint16_t i = 0; i < iterations; i++)
     {
-        v = vertices[esp_random() % 3];
-        p.x = (p.x + v.x) / 2;
-        p.y = (p.y + v.y) / 2;
+        v = vertices[esp_random() % vertex_count];
+        p.x = (uint8_t) ((float) (p.x + v.x) * multiplier);
+        p.y = (uint8_t) ((float) (p.y + v.y) * multiplier);
 
         set_pixel(p.x, p.y);
 
@@ -138,5 +156,5 @@ void draw_sierpinski(uint16_t iterations)
     }
 
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel, 0, 0, LCD_H_RES, LCD_V_RES, buffer));
-    ESP_LOGI(TAG, "Finished drawing Sierpinski triangle.");
+    ESP_LOGI(TAG, "Finished chaos game.");
 }
