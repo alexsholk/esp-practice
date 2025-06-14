@@ -1,0 +1,9 @@
+menu "Application Configuration"
+
+    config RGB_LED_GPIO
+        int "Addressable RGB LED GPIO pin"
+        range 0 48
+        default 48
+        help
+             GPIO pin for addressable RGB LED
+endmenu
